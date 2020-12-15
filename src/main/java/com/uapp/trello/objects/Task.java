@@ -14,6 +14,9 @@ public class Task {
     private String name;
 
     @Column
+    private String description;
+
+    @Column
     private String date;
 
     @Column
@@ -22,6 +25,14 @@ public class Task {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "board_column_id")
     private BoardColumn boardColumn;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public int getId() {
         return id;

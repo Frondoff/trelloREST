@@ -6,6 +6,7 @@ public class TaskDto {
 
     private int id;
     private String name;
+    private String description;
     private String date;
     private int position;
     private BoardColumn boardColumn;
@@ -24,6 +25,14 @@ public class TaskDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getDate() {
