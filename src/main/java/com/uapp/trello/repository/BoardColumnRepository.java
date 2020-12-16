@@ -19,18 +19,22 @@ public class BoardColumnRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public void saveBoardColumn(BoardColumn boardColumn) {
+    public BoardColumn saveBoardColumn(BoardColumn boardColumn) {
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.beginTransaction();
         session.save(boardColumn);
         transaction.commit();
+
+        return boardColumn;
     }
 
-    public void updateBoardColumn(BoardColumn boardColumn) {
+    public BoardColumn updateBoardColumn(BoardColumn boardColumn) {
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.beginTransaction();
         session.update(boardColumn);
         transaction.commit();
+
+        return boardColumn;
     }
 
     public void deleteBoardColumn(BoardColumn boardColumn) {

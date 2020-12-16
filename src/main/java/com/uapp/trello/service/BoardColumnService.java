@@ -2,7 +2,6 @@ package com.uapp.trello.service;
 
 import com.uapp.trello.objects.BoardColumn;
 import com.uapp.trello.objects.dto.BoardColumnDto;
-import com.uapp.trello.objects.dto.ColumnsSwapDto;
 import com.uapp.trello.repository.BoardColumnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,35 +18,35 @@ public class BoardColumnService {
         this.boardColumnRepository = boardColumnRepository;
     }
 
-    public void createColumn(BoardColumnDto boardColumnDto) {
+    public BoardColumn createColumn(BoardColumnDto boardColumnDto) {
         BoardColumn boardColumn = new BoardColumn();
         boardColumn.setName(boardColumnDto.getName());
         boardColumn.setPosition(boardColumnRepository.getCountOfColumns() + 1);
-        boardColumnRepository.saveBoardColumn(boardColumn);
+
+        return boardColumnRepository.saveBoardColumn(boardColumn);
     }
 
-    public void editColumnName(BoardColumnDto boardColumnDto) {
-        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(boardColumnDto.getId());
-        boardColumn.setName(boardColumnDto.getName());
-        boardColumnRepository.updateBoardColumn(boardColumn);
+    public BoardColumn editColumn(int id, String name) {
+        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
+        boardColumn.setName(name);
+        return boardColumnRepository.updateBoardColumn(boardColumn);
     }
 
-    public void changeColumnOrder(ColumnsSwapDto columnsSwapDto) {
-        BoardColumn firstBoardColumn = boardColumnRepository.getBoardColumnByPosition(columnsSwapDto.getFirstElementId());
-        BoardColumn secondBoardColumn = boardColumnRepository.getBoardColumnByPosition(columnsSwapDto.getSecondElementId());
+    public BoardColumn changeColumnOrder(int id, int newPosition) {
+        BoardColumn firstBoardColumn = boardColumnRepository.getBoardColumnById(id);
+        BoardColumn secondBoardColumn = boardColumnRepository.getBoardColumnByPosition(newPosition);
 
-        int temp = firstBoardColumn.getId();
-        firstBoardColumn.setPosition(secondBoardColumn.getPosition());
-        secondBoardColumn.setPosition(temp);
+        secondBoardColumn.setPosition(firstBoardColumn.getPosition());
+        firstBoardColumn.setPosition(newPosition);
 
-        boardColumnRepository.updateBoardColumn(firstBoardColumn);
         boardColumnRepository.updateBoardColumn(secondBoardColumn);
+        return boardColumnRepository.updateBoardColumn(firstBoardColumn);
     }
 
-    public void deleteColumn(BoardColumnDto boardColumnDto) {
-        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(boardColumnDto.getId());
+    public void deleteColumn(int id) {
+        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
         boardColumnRepository.deleteBoardColumn(boardColumn);
-        fixColumnsOrder(boardColumnDto.getPosition());
+        fixColumnsOrder(boardColumn.getPosition());
     }
 
     private void fixColumnsOrder(int position) {
