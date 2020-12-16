@@ -61,11 +61,24 @@ public class TaskRepository {
     }
 
     public int getLastReservedPosition(int columnId) {
-        return (int) sessionFactory.getCurrentSession()
-                .createQuery("Select t.position from Task t where t.boardColumn.id = :columnId " +
-                        "order by t.position desc limit 1")
+        if (sessionFactory.getCurrentSession()
+                .createQuery("Select MAX(t.position) from Task t where t.boardColumn.id = :columnId ")
                 .setParameter("columnId", columnId)
-                .uniqueResult();
+                .getSingleResult() == null) {
+            return 0;
+        } else {
+            return (int) sessionFactory.getCurrentSession()
+                    .createQuery("Select MAX(t.position) from Task t where t.boardColumn.id = :columnId")
+                    .setParameter("columnId", columnId)
+                    .getSingleResult();
+        }
+    }
+
+    public Long getCountOfTasks(int columnId) {
+        return sessionFactory.getCurrentSession()
+                .createQuery("SELECT count(distinct t.id) FROM Task t where t.boardColumn.id = :columnId", Long.class)
+                .setParameter("columnId", columnId)
+                .getSingleResult();
     }
 
     public List<Task> getTasksGreaterThanDeleted(int columnId, int position) {

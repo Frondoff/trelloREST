@@ -1,7 +1,5 @@
 package com.uapp.trello.objects.dto;
 
-import com.uapp.trello.objects.BoardColumn;
-
 public class TaskDto {
 
     private int id;
@@ -9,7 +7,7 @@ public class TaskDto {
     private String description;
     private String date;
     private int position;
-    private BoardColumn boardColumn;
+    private int boardColumnId;
 
     public int getId() {
         return id;
@@ -51,11 +49,11 @@ public class TaskDto {
         this.position = position;
     }
 
-    public BoardColumn getBoardColumn() {
-        return boardColumn;
+    public int getBoardColumnId() {
+        return boardColumnId;
     }
 
-    public void setBoardColumn(BoardColumn boardColumn) {
-        this.boardColumn = boardColumn;
+    public void setBoardColumnId(int boardColumnId) {
+        this.boardColumnId = boardColumnId;
     }
 }

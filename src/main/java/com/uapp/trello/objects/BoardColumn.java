@@ -1,7 +1,6 @@
 package com.uapp.trello.objects;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "board_column")
@@ -16,9 +15,6 @@ public class BoardColumn {
 
     @Column
     private int position;
-
-    @OneToMany(mappedBy = "boardColumn")
-    private Set<Task> tasks;
 
     public int getId() {
         return id;
@@ -44,11 +40,11 @@ public class BoardColumn {
         this.position = position;
     }
 
-    public Set<Task> getTasks() {
+/*    public Set<Task> getTasks() {
         return tasks;
     }
 
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
-    }
+    }*/
 }

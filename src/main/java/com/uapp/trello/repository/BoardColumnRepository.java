@@ -58,9 +58,9 @@ public class BoardColumnRepository {
                 .uniqueResult();
     }
 
-    public int getCountOfColumns() {
-        return (int) sessionFactory.getCurrentSession()
-                .createQuery("SELECT count(bc.id) FROM BoardColumn bc")
+    public Long getCountOfColumns() {
+        return sessionFactory.getCurrentSession()
+                .createQuery("SELECT count(distinct bc.id) FROM BoardColumn bc", Long.class)
                 .getSingleResult();
     }
 

@@ -22,7 +22,7 @@ public class Task {
     @Column
     private int position;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "board_column_id")
     private BoardColumn boardColumn;
 

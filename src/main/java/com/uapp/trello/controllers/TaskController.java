@@ -40,7 +40,7 @@ public class TaskController {
 
     @DeleteMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void editBoardColumn(@PathVariable int id) {
+    public void deleteTask(@PathVariable int id) {
         taskService.deleteTask(id);
     }
 }

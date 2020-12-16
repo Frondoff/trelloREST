@@ -11,6 +11,10 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
 
 import javax.sql.DataSource;
 import java.util.Properties;
@@ -69,5 +73,13 @@ public class ApplicationConfig {
                 "hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
 
         return hibernateProperties;
+    }
+
+    @Bean
+    public Docket produceApi() {
+        return new Docket(DocumentationType.SWAGGER_2).select()
+                .apis(RequestHandlerSelectors.basePackage("com.uapp.trello.controllers"))
+                .paths(PathSelectors.any())
+                .build();
     }
 }

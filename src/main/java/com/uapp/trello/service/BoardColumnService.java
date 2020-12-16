@@ -1,7 +1,6 @@
 package com.uapp.trello.service;
 
 import com.uapp.trello.objects.BoardColumn;
-import com.uapp.trello.objects.dto.BoardColumnDto;
 import com.uapp.trello.repository.BoardColumnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +17,10 @@ public class BoardColumnService {
         this.boardColumnRepository = boardColumnRepository;
     }
 
-    public BoardColumn createColumn(BoardColumnDto boardColumnDto) {
+    public BoardColumn createColumn(String name) {
         BoardColumn boardColumn = new BoardColumn();
-        boardColumn.setName(boardColumnDto.getName());
-        boardColumn.setPosition(boardColumnRepository.getCountOfColumns() + 1);
+        boardColumn.setName(name);
+        boardColumn.setPosition((int) (boardColumnRepository.getCountOfColumns() + 1));
 
         return boardColumnRepository.saveBoardColumn(boardColumn);
     }

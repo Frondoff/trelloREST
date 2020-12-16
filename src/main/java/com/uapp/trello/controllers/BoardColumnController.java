@@ -1,7 +1,6 @@
 package com.uapp.trello.controllers;
 
 import com.uapp.trello.objects.BoardColumn;
-import com.uapp.trello.objects.dto.BoardColumnDto;
 import com.uapp.trello.service.BoardColumnService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,8 +18,8 @@ public class BoardColumnController {
     }
 
     @PostMapping("/columns")
-    public ResponseEntity<BoardColumn> createBoardColumn(@RequestBody BoardColumnDto boardColumnDto) {
-        return new ResponseEntity<>(boardColumnService.createColumn(boardColumnDto), HttpStatus.CREATED);
+    public ResponseEntity<BoardColumn> createBoardColumn(@RequestBody String name) {
+        return new ResponseEntity<>(boardColumnService.createColumn(name), HttpStatus.CREATED);
     }
 
     @PutMapping("/columns/{id}")
@@ -35,7 +34,7 @@ public class BoardColumnController {
 
     @DeleteMapping("/columns/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void editBoardColumn(@PathVariable int id) {
+    public void deleteBoardColumn(@PathVariable int id) {
         boardColumnService.deleteColumn(id);
     }
 }

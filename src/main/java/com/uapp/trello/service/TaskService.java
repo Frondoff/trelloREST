@@ -25,11 +25,13 @@ public class TaskService {
 
     public Task createTask(TaskDto taskDto) {
         Task task = new Task();
+        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(taskDto.getBoardColumnId());
+
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
         task.setDate(String.valueOf(LocalDate.now()));
-        task.setPosition(taskDto.getPosition());
-        task.setBoardColumn(taskDto.getBoardColumn());
+        task.setPosition((int) (taskRepository.getCountOfTasks(boardColumn.getId()) + 1));
+        task.setBoardColumn(boardColumn);
 
         return taskRepository.saveTask(task);
     }
@@ -69,6 +71,7 @@ public class TaskService {
         int oldPosition = task.getPosition();
 
         task.setBoardColumn(boardColumn);
+        //if (boardC)
         task.setPosition(taskRepository.getLastReservedPosition(newColumnId) + 1);
 
         fixTasksOrder(oldColumnId, oldPosition);
