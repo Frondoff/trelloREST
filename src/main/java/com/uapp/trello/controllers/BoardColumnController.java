@@ -28,8 +28,8 @@ public class BoardColumnController {
         return new ResponseEntity<>(boardColumnService.editColumn(id, name), HttpStatus.OK);
     }
 
-    @PutMapping("/columns/{id}")
-    public ResponseEntity<BoardColumn> editBoardColumn(@RequestBody int newPosition, @PathVariable int id) {
+    @PutMapping("/columns/{id}/move")
+    public ResponseEntity<BoardColumn> changeBoardColumnsOrder(@RequestBody int newPosition, @PathVariable int id) {
         return new ResponseEntity<>(boardColumnService.changeColumnOrder(id, newPosition), HttpStatus.OK);
     }
 
