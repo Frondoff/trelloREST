@@ -19,18 +19,22 @@ public class TaskRepository {
         this.sessionFactory = sessionFactory;
     }
 
-    public void saveTask(Task task) {
+    public Task saveTask(Task task) {
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.beginTransaction();
         session.save(task);
         transaction.commit();
+
+        return task;
     }
 
-    public void updateTask(Task task) {
+    public Task updateTask(Task task) {
         Session session = sessionFactory.getCurrentSession();
         Transaction transaction = session.beginTransaction();
         session.update(task);
         transaction.commit();
+
+        return task;
     }
 
     public void deleteTask(Task task) {

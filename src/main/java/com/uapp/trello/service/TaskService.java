@@ -23,53 +23,56 @@ public class TaskService {
         this.boardColumnRepository = boardColumnRepository;
     }
 
-    public void createTask(TaskDto taskDto) {
+    public Task createTask(TaskDto taskDto) {
         Task task = new Task();
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
         task.setDate(String.valueOf(LocalDate.now()));
         task.setPosition(taskDto.getPosition());
         task.setBoardColumn(taskDto.getBoardColumn());
-        taskRepository.saveTask(task);
+
+        return taskRepository.saveTask(task);
     }
 
-    public void editTask(TaskDto taskDto) {
-        Task task = taskRepository.getTaskById(taskDto.getId());
+    public Task editTask(int id, TaskDto taskDto) {
+        Task task = taskRepository.getTaskById(id);
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
         task.setDate(taskDto.getDate());
-        taskRepository.updateTask(task);
+
+        return taskRepository.updateTask(task);
     }
 
-    public void deleteTask(TaskDto taskDto) {
-        Task task = taskRepository.getTaskById(taskDto.getId());
+    public void deleteTask(int id) {
+        Task task = taskRepository.getTaskById(id);
         taskRepository.deleteTask(task);
 
-        fixTasksOrder(taskDto.getBoardColumn().getId(), taskDto.getPosition());
-    }
-
-    public void changeTasksOrder(TaskDto taskDto, int newPosition) {
-
-        Task firstTask = taskRepository.getTaskByColumnAndPosition(taskDto.getBoardColumn().getId(),
-                taskDto.getPosition());
-        Task secondTask = taskRepository.getTaskByColumnAndPosition(taskDto.getBoardColumn().getId(),
-                newPosition);
-
-        int temp = firstTask.getPosition();
-        firstTask.setPosition(secondTask.getPosition());
-        secondTask.setPosition(temp);
-
-        taskRepository.updateTask(firstTask);
-        taskRepository.updateTask(secondTask);
-    }
-
-    public void moveTaskToAnotherColumn(int taskId, int newColumnPosition) {
-        Task task = taskRepository.getTaskById(taskId);
-        BoardColumn boardColumn = boardColumnRepository.getBoardColumnByPosition(newColumnPosition);
-        task.setBoardColumn(boardColumn);
-        task.setPosition(taskRepository.getLastReservedPosition(newColumnPosition) + 1);
-        taskRepository.updateTask(task);
         fixTasksOrder(task.getBoardColumn().getId(), task.getPosition());
+    }
+
+    public Task changeTasksOrder(int id, int newPosition) {
+
+        Task firstTask = taskRepository.getTaskById(id);
+        Task secondTask = taskRepository.getTaskByColumnAndPosition(firstTask.getBoardColumn().getId(), newPosition);
+
+        secondTask.setPosition(firstTask.getPosition());
+        firstTask.setPosition(newPosition);
+
+        taskRepository.updateTask(secondTask);
+        return taskRepository.updateTask(firstTask);
+    }
+
+    public Task moveTaskToAnotherColumn(int taskId, int newColumnId) {
+        Task task = taskRepository.getTaskById(taskId);
+        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(newColumnId);
+        int oldColumnId = task.getBoardColumn().getId();
+        int oldPosition = task.getPosition();
+
+        task.setBoardColumn(boardColumn);
+        task.setPosition(taskRepository.getLastReservedPosition(newColumnId) + 1);
+
+        fixTasksOrder(oldColumnId, oldPosition);
+        return taskRepository.updateTask(task);
     }
 
     private void fixTasksOrder(int columnId, int position) {
