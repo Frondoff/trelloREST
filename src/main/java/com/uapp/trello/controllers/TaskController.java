@@ -18,29 +18,31 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping("/tasks")
+    @PostMapping("/columns/tasks")
     public ResponseEntity<Task> createTask(@RequestBody TaskDto taskDto) {
         return new ResponseEntity<>(taskService.createTask(taskDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/columns/tasks/{id}")
     public ResponseEntity<Task> editTask(@RequestBody TaskDto taskDto, @PathVariable int id) {
         return new ResponseEntity<>(taskService.editTask(id, taskDto), HttpStatus.OK);
     }
 
-    @PutMapping("/tasks/{id}/order")
-    public ResponseEntity<Task> changeTasksOrder(@RequestBody int newPosition, @PathVariable int id) {
-        return new ResponseEntity<>(taskService.changeTasksOrder(id, newPosition), HttpStatus.OK);
+    @PutMapping("/columns/{columnId}/tasks/{taskId}/order")
+    public ResponseEntity<Task> changeTasksOrder(@RequestBody int newPosition, @PathVariable int columnId,
+                                                 @PathVariable int taskId) {
+        return new ResponseEntity<>(taskService.changeTasksOrder(columnId, taskId, newPosition), HttpStatus.OK);
     }
 
-    @PutMapping("/tasks/{id}/move")
-    public ResponseEntity<Task> moveTaskToAnotherColumn(@RequestBody int newColumnId, @PathVariable int id) {
-        return new ResponseEntity<>(taskService.moveTaskToAnotherColumn(id, newColumnId), HttpStatus.OK);
+    @PutMapping("/columns/{columnId}/tasks/{taskId}/move")
+    public ResponseEntity<Task> moveTaskToAnotherColumn(@RequestBody int newColumnId, @PathVariable int columnId,
+                                                        @PathVariable int taskId) {
+        return new ResponseEntity<>(taskService.moveTaskToAnotherColumn(columnId, taskId, newColumnId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/tasks/{id}")
+    @DeleteMapping("/columns/{columnId}/tasks/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable int id) {
-        taskService.deleteTask(id);
+    public void deleteTask(@PathVariable int columnId, @PathVariable int taskId) {
+        taskService.deleteTask(columnId, taskId);
     }
 }
