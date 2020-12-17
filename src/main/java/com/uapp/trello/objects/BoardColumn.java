@@ -9,12 +9,24 @@ public class BoardColumn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Column
     private String name;
-
     @Column
     private int position;
+
+    public BoardColumn() {
+    }
+
+    public BoardColumn(String name, int position) {
+        this.name = name;
+        this.position = position;
+    }
+
+    public BoardColumn(int id, String name, int position) {
+        this.id = id;
+        this.name = name;
+        this.position = position;
+    }
 
     public int getId() {
         return id;
@@ -40,11 +52,17 @@ public class BoardColumn {
         this.position = position;
     }
 
-/*    public Set<Task> getTasks() {
-        return tasks;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        BoardColumn boardColumn = (BoardColumn) obj;
+        if (name != null && position > 0 /*&& id != 0*/) {
+            return boardColumn.name.equals(name) && boardColumn.position == position /*&& boardColumn.id == id*/;
+        } else return false;
     }
-
-    public void setTasks(Set<Task> tasks) {
-        this.tasks = tasks;
-    }*/
 }

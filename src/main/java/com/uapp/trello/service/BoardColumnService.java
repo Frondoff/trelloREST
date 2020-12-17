@@ -45,11 +45,11 @@ public class BoardColumnService {
     public void deleteColumn(int id) {
         BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
         boardColumnRepository.deleteBoardColumn(boardColumn);
-        fixColumnsOrder(boardColumn.getPosition());
+
+        fixColumnsOrder(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition()));
     }
 
-    private void fixColumnsOrder(int position) {
-        List<BoardColumn> boardColumns = boardColumnRepository.getColumnsGreaterThanDeleted(position);
+    private void fixColumnsOrder(List<BoardColumn> boardColumns) {
         for (BoardColumn boardColumn : boardColumns) {
             boardColumn.setPosition(boardColumn.getPosition() - 1);
             boardColumnRepository.updateBoardColumn(boardColumn);

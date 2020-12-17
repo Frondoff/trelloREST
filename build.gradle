@@ -32,4 +32,12 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
 
     implementation "io.springfox:springfox-boot-starter:3.0.0"
+
+    implementation 'org.mockito:mockito-testng:0.2.2'
+
+    testImplementation "org.testng:testng:7.3.0"
+}
+
+test {
+    useTestNG()
 }
