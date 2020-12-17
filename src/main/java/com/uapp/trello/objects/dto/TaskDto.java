@@ -9,6 +9,15 @@ public class TaskDto {
     private int position;
     private int boardColumnId;
 
+    public TaskDto(int id, String name, String description, String date, int position, int boardColumnId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.position = position;
+        this.boardColumnId = boardColumnId;
+    }
+
     public int getId() {
         return id;
     }

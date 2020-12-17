@@ -49,7 +49,8 @@ public class TaskService {
         Task task = taskRepository.getTaskById(taskId);
         taskRepository.deleteTask(task);
 
-        fixTasksOrder(columnId, task.getPosition());
+        List<Task> tasks = taskRepository.getTasksGreaterThanDeleted(columnId, task.getPosition());
+        fixTasksOrder(tasks);
     }
 
     public Task changeTasksOrder(int columnId, int taskId, int newPosition) {
@@ -67,19 +68,18 @@ public class TaskService {
     public Task moveTaskToAnotherColumn(int columnId, int taskId, int newColumnId) {
         Task task = taskRepository.getTaskById(taskId);
         BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(newColumnId);
-        int oldColumnId = columnId;
         int oldPosition = task.getPosition();
 
         task.setBoardColumn(boardColumn);
 
         task.setPosition(taskRepository.getLastReservedPosition(newColumnId) + 1);
 
-        fixTasksOrder(oldColumnId, oldPosition);
+        List<Task> tasks = taskRepository.getTasksGreaterThanDeleted(columnId, oldPosition);
+        fixTasksOrder(tasks);
         return taskRepository.updateTask(task);
     }
 
-    private void fixTasksOrder(int columnId, int position) {
-        List<Task> tasks = taskRepository.getTasksGreaterThanDeleted(columnId, position);
+    private void fixTasksOrder(List<Task> tasks) {
         for (Task task : tasks) {
             task.setPosition(task.getPosition() - 1);
             taskRepository.updateTask(task);
