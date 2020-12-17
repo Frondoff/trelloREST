@@ -61,8 +61,8 @@ public class BoardColumn {
         if (getClass() != obj.getClass())
             return false;
         BoardColumn boardColumn = (BoardColumn) obj;
-        if (name != null && position > 0 /*&& id != 0*/) {
-            return boardColumn.name.equals(name) && boardColumn.position == position /*&& boardColumn.id == id*/;
+        if (name != null && position > 0) {
+            return boardColumn.id == id && boardColumn.name.equals(name) && boardColumn.position == position;
         } else return false;
     }
 }

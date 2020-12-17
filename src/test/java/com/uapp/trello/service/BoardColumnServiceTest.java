@@ -18,6 +18,8 @@ import static org.testng.Assert.assertEquals;
 public class BoardColumnServiceTest {
 
     private static final String TEST_COLUMN_NAME = "TestColumn";
+    private static final String NEW_TEST_COLUMN_NAME = "New TestColumn";
+
     @Mock
     private BoardColumnRepository boardColumnRepository;
     @InjectMocks
@@ -26,24 +28,24 @@ public class BoardColumnServiceTest {
     @Test
     public void test_create_column_was_success() {
         BoardColumn boardColumn = new BoardColumn(TEST_COLUMN_NAME, 1);
+
         Mockito.when(boardColumnRepository.saveBoardColumn(boardColumn)).thenReturn(boardColumn);
 
         BoardColumn expectedColumn = boardColumnService.createColumn(TEST_COLUMN_NAME);
 
-        assertEquals(expectedColumn, boardColumn);
+        assertEquals(boardColumn, expectedColumn);
     }
 
     @Test
     public void test_edit_column__was_success() {
         BoardColumn boardColumn = new BoardColumn(1, TEST_COLUMN_NAME, 1);
 
-        Mockito.when(boardColumnRepository.getBoardColumnById(1)).thenReturn(boardColumn);
+        Mockito.when(boardColumnRepository.getBoardColumnById(boardColumn.getId())).thenReturn(boardColumn);
         Mockito.when(boardColumnRepository.updateBoardColumn(boardColumn)).thenReturn(boardColumn);
 
-        BoardColumn expectedColumn = boardColumnService.editColumn(1, "name");
+        BoardColumn expectedColumn = boardColumnService.editColumn(1, NEW_TEST_COLUMN_NAME);
 
-        assertEquals(expectedColumn, boardColumn);
-        assertEquals(expectedColumn.getId(), boardColumn.getId());
+        assertEquals(NEW_TEST_COLUMN_NAME, expectedColumn.getName());
     }
 
     @Test
@@ -51,14 +53,16 @@ public class BoardColumnServiceTest {
         BoardColumn firstBoardColumn = new BoardColumn(1, TEST_COLUMN_NAME, 1);
         BoardColumn secondBoardColumn = new BoardColumn(2, TEST_COLUMN_NAME, 2);
 
-        Mockito.when(boardColumnRepository.getBoardColumnById(1)).thenReturn(firstBoardColumn);
-        Mockito.when(boardColumnRepository.getBoardColumnByPosition(2)).thenReturn(secondBoardColumn);
-        Mockito.when(boardColumnRepository.updateBoardColumn(firstBoardColumn)).thenReturn(secondBoardColumn);
-        Mockito.when(boardColumnRepository.updateBoardColumn(secondBoardColumn)).thenReturn(firstBoardColumn);
+        Mockito.when(boardColumnRepository.getBoardColumnById(firstBoardColumn.getId())).thenReturn(firstBoardColumn);
+        Mockito.when(boardColumnRepository.getBoardColumnByPosition(secondBoardColumn.getId())).thenReturn(secondBoardColumn);
+        Mockito.when(boardColumnRepository.updateBoardColumn(firstBoardColumn)).thenReturn(firstBoardColumn);
+        Mockito.when(boardColumnRepository.updateBoardColumn(secondBoardColumn)).thenReturn(secondBoardColumn);
 
         BoardColumn expectedColumn = boardColumnService.changeColumnOrder(1, 2);
 
-        assertEquals(expectedColumn, secondBoardColumn);
+        assertEquals(2, expectedColumn.getPosition());
+        assertEquals(1, secondBoardColumn.getPosition());
+        assertEquals(2, firstBoardColumn.getPosition());
     }
 
     @Test
@@ -67,10 +71,11 @@ public class BoardColumnServiceTest {
         List<BoardColumn> boardColumns = Arrays.asList(
                 new BoardColumn(2, TEST_COLUMN_NAME, 2),
                 new BoardColumn(3, TEST_COLUMN_NAME, 3));
-        Mockito.when(boardColumnRepository.getBoardColumnById(1)).thenReturn(boardColumn);
-        Mockito.when(boardColumnRepository.getColumnsGreaterThanDeleted(1)).thenReturn(boardColumns);
 
-        boardColumnService.deleteColumn(1);
+        Mockito.when(boardColumnRepository.getBoardColumnById(boardColumn.getId())).thenReturn(boardColumn);
+        Mockito.when(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition())).thenReturn(boardColumns);
+
+        boardColumnService.deleteColumn(boardColumn.getId());
 
         Mockito.verify(boardColumnRepository, Mockito.times(1)).deleteBoardColumn(boardColumn);
     }
