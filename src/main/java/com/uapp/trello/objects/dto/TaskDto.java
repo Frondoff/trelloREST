@@ -2,28 +2,14 @@ package com.uapp.trello.objects.dto;
 
 public class TaskDto {
 
-    private int id;
     private String name;
     private String description;
     private String date;
-    private int position;
-    private int boardColumnId;
 
-    public TaskDto(int id, String name, String description, String date, int position, int boardColumnId) {
-        this.id = id;
+    public TaskDto(String name, String description, String date) {
         this.name = name;
         this.description = description;
         this.date = date;
-        this.position = position;
-        this.boardColumnId = boardColumnId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -50,19 +36,8 @@ public class TaskDto {
         this.date = date;
     }
 
-    public int getPosition() {
-        return position;
-    }
-
-    public void setPosition(int position) {
-        this.position = position;
-    }
-
-    public int getBoardColumnId() {
-        return boardColumnId;
-    }
-
-    public void setBoardColumnId(int boardColumnId) {
-        this.boardColumnId = boardColumnId;
+    @Override
+    public String toString() {
+        return "{\"name\": \"" + name + "\", \"description\": \"" + description + "\", \"date\": \"" + date + "\"}";
     }
 }

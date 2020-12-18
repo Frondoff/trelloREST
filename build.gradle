@@ -48,6 +48,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     testImplementation "org.junit.platform:junit-platform-commons:1.7.0"
     testImplementation 'junit:junit:4.12'
+
+    implementation 'org.hamcrest:hamcrest:2.2'
 }
 
 test {

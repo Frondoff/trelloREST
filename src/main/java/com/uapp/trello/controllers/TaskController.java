@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class TaskController {
 
@@ -18,31 +20,46 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @PostMapping("/columns/tasks")
-    public ResponseEntity<Task> createTask(@RequestBody TaskDto taskDto) {
-        return new ResponseEntity<>(taskService.createTask(taskDto), HttpStatus.CREATED);
+    @PostMapping("/columns/{columnID}/tasks")
+    public ResponseEntity<Task> createTask(@RequestBody TaskDto taskDto, @PathVariable int columnID) {
+        return new ResponseEntity<>(taskService.createTask(columnID, taskDto), HttpStatus.CREATED);
     }
 
     @PutMapping("/columns/**/tasks/{taskId}")
     public ResponseEntity<Task> editTask(@RequestBody TaskDto taskDto, @PathVariable int taskId) {
-        return new ResponseEntity<>(taskService.editTask(taskId, taskDto), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(taskService.editTask(taskId, taskDto), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/columns/{columnId}/tasks/{taskId}/order")
     public ResponseEntity<Task> changeTasksOrder(@RequestBody int newPosition, @PathVariable int columnId,
                                                  @PathVariable int taskId) {
-        return new ResponseEntity<>(taskService.changeTasksOrder(columnId, taskId, newPosition), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(taskService.changeTasksOrder(columnId, taskId, newPosition), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/columns/{columnId}/tasks/{taskId}/move")
     public ResponseEntity<Task> moveTaskToAnotherColumn(@RequestBody int newColumnId, @PathVariable int columnId,
                                                         @PathVariable int taskId) {
-        return new ResponseEntity<>(taskService.moveTaskToAnotherColumn(columnId, taskId, newColumnId), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(taskService.moveTaskToAnotherColumn(columnId, taskId, newColumnId), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/columns/{columnId}/tasks/{taskId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTask(@PathVariable int columnId, @PathVariable int taskId) {
-        taskService.deleteTask(columnId, taskId);
+    public ResponseEntity<List<Task>> deleteTask(@PathVariable int columnId, @PathVariable int taskId) {
+        try {
+            return new ResponseEntity<>(taskService.deleteTask(columnId, taskId), HttpStatus.OK);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

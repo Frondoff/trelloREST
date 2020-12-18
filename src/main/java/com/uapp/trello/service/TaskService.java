@@ -23,9 +23,9 @@ public class TaskService {
         this.boardColumnRepository = boardColumnRepository;
     }
 
-    public Task createTask(TaskDto taskDto) {
+    public Task createTask(int columnId, TaskDto taskDto) {
         Task task = new Task();
-        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(taskDto.getBoardColumnId());
+        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(columnId);
 
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
@@ -39,27 +39,29 @@ public class TaskService {
     public Task editTask(int taskId, TaskDto taskDto) {
         if (taskRepository.getTaskById(taskId) == null) {
             throw new IllegalArgumentException();
-        } else {
-            Task task = taskRepository.getTaskById(taskId);
-            task.setName(taskDto.getName());
-            task.setDescription(taskDto.getDescription());
-            task.setDate(taskDto.getDate());
-
-            return taskRepository.updateTask(task);
         }
+        Task task = taskRepository.getTaskById(taskId);
+        task.setName(taskDto.getName());
+        task.setDescription(taskDto.getDescription());
+        task.setDate(taskDto.getDate());
+
+        return taskRepository.updateTask(task);
     }
 
     public List<Task> deleteTask(int columnId, int taskId) {
         if (taskRepository.getTaskById(taskId) == null || boardColumnRepository.getBoardColumnById(columnId) == null) {
             throw new IllegalArgumentException();
-        } else {
-            Task task = taskRepository.getTaskById(taskId);
-            taskRepository.deleteTask(task);
-            return fixTasksOrder(taskRepository.getTasksGreaterThanDeleted(columnId, task.getPosition()));
         }
+        Task task = taskRepository.getTaskById(taskId);
+        taskRepository.deleteTask(task);
+        return fixTasksOrder(taskRepository.getTasksGreaterThanDeleted(columnId, task.getPosition()));
     }
 
     public Task changeTasksOrder(int columnId, int taskId, int newPosition) {
+        if (taskRepository.getTaskById(taskId) == null
+                || taskRepository.getTaskByColumnAndPosition(columnId, newPosition) == null) {
+            throw new IllegalArgumentException();
+        }
         Task firstTask = taskRepository.getTaskById(taskId);
         Task secondTask = taskRepository.getTaskByColumnAndPosition(columnId, newPosition);
 
@@ -72,6 +74,10 @@ public class TaskService {
     }
 
     public Task moveTaskToAnotherColumn(int columnId, int taskId, int newColumnId) {
+        if (taskRepository.getTaskById(taskId) == null
+                || boardColumnRepository.getBoardColumnById(newColumnId) == null) {
+            throw new IllegalArgumentException();
+        }
         Task task = taskRepository.getTaskById(taskId);
         BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(newColumnId);
         int oldPosition = task.getPosition();

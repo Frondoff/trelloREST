@@ -21,7 +21,10 @@ public class BoardColumnServiceTest {
 
     private static final String TEST_COLUMN_NAME = "TestColumn";
     private static final String NEW_TEST_COLUMN_NAME = "New TestColumn";
+    private static final int COLUMN_ID = 1;
     private static final int UNKNOWN_ID = Integer.MAX_VALUE;
+    private static final int POSITION = 1;
+    private static final int UNKNOWN_POSITION = Integer.MAX_VALUE;
 
     @Mock
     private BoardColumnRepository boardColumnRepository;
@@ -37,25 +40,26 @@ public class BoardColumnServiceTest {
 
     @Test
     public void test_create_column_was_success() {
-        BoardColumn boardColumn = new BoardColumn(TEST_COLUMN_NAME, 1);
+        BoardColumn boardColumn = new BoardColumn(TEST_COLUMN_NAME, POSITION);
 
-        when(boardColumnRepository.saveBoardColumn(boardColumn)).thenReturn(new BoardColumn(1, TEST_COLUMN_NAME, 1));
+        when(boardColumnRepository.saveBoardColumn(boardColumn))
+                .thenReturn(new BoardColumn(COLUMN_ID, TEST_COLUMN_NAME, POSITION));
 
         BoardColumn actualColumn = boardColumnService.createColumn(TEST_COLUMN_NAME);
 
-        assertEquals(1, actualColumn.getId());
+        assertEquals(COLUMN_ID, actualColumn.getId());
         assertEquals(TEST_COLUMN_NAME, actualColumn.getName());
-        assertEquals(1, actualColumn.getPosition());
+        assertEquals(POSITION, actualColumn.getPosition());
     }
 
     @Test
     public void test_edit_column_was_success() {
-        BoardColumn boardColumn = new BoardColumn(1, TEST_COLUMN_NAME, 1);
+        BoardColumn boardColumn = new BoardColumn(COLUMN_ID, TEST_COLUMN_NAME, POSITION);
 
-        when(boardColumnRepository.getBoardColumnById(1)).thenReturn(boardColumn);
+        when(boardColumnRepository.getBoardColumnById(COLUMN_ID)).thenReturn(boardColumn);
         when(boardColumnRepository.updateBoardColumn(boardColumn)).thenReturn(boardColumn);
 
-        BoardColumn actualColumn = boardColumnService.editColumn(1, NEW_TEST_COLUMN_NAME);
+        BoardColumn actualColumn = boardColumnService.editColumn(COLUMN_ID, NEW_TEST_COLUMN_NAME);
 
         assertEquals(NEW_TEST_COLUMN_NAME, actualColumn.getName());
     }
@@ -84,17 +88,34 @@ public class BoardColumnServiceTest {
         assertEquals(2, firstBoardColumn.getPosition());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void test_change_columns_order_should_throw_exception_when_column_not_found() {
+        when(boardColumnRepository.getBoardColumnById(UNKNOWN_ID)).thenReturn(null);
+
+        boardColumnService.changeColumnOrder(UNKNOWN_ID, POSITION);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_change_columns_order_should_throw_exception_when_new_column_not_found() {
+        BoardColumn boardColumn = new BoardColumn(COLUMN_ID, TEST_COLUMN_NAME, POSITION);
+
+        when(boardColumnRepository.getBoardColumnById(COLUMN_ID)).thenReturn(boardColumn);
+        when(boardColumnRepository.getBoardColumnByPosition(UNKNOWN_POSITION)).thenReturn(null);
+
+        boardColumnService.changeColumnOrder(COLUMN_ID, UNKNOWN_POSITION);
+    }
+
     @Test
     public void test_delete_column_was_success() {
-        BoardColumn boardColumn = new BoardColumn(1, TEST_COLUMN_NAME, 1);
+        BoardColumn boardColumn = new BoardColumn(COLUMN_ID, TEST_COLUMN_NAME, POSITION);
         List<BoardColumn> boardColumns = Arrays.asList(
                 new BoardColumn(2, TEST_COLUMN_NAME, 2),
                 new BoardColumn(3, TEST_COLUMN_NAME, 3));
 
-        when(boardColumnRepository.getBoardColumnById(boardColumn.getId())).thenReturn(boardColumn);
-        when(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition())).thenReturn(boardColumns);
+        when(boardColumnRepository.getBoardColumnById(COLUMN_ID)).thenReturn(boardColumn);
+        when(boardColumnRepository.getColumnsGreaterThanDeleted(POSITION)).thenReturn(boardColumns);
 
-        List<BoardColumn> actualBoardColumns = boardColumnService.deleteColumn(boardColumn.getId());
+        List<BoardColumn> actualBoardColumns = boardColumnService.deleteColumn(COLUMN_ID);
 
         assertEquals(1, actualBoardColumns.get(0).getPosition());
         assertEquals(2, actualBoardColumns.get(1).getPosition());
