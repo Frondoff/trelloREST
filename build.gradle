@@ -33,11 +33,23 @@ dependencies {
 
     implementation "io.springfox:springfox-boot-starter:3.0.0"
 
-    implementation 'org.mockito:mockito-testng:0.2.2'
+    testImplementation 'org.mockito:mockito-core:3.6.28'
+    testImplementation 'org.mockito:mockito-inline:3.6.28'
 
-    testImplementation "org.testng:testng:7.3.0"
+    testImplementation 'io.rest-assured:rest-assured:4.3.3'
+    testImplementation 'io.rest-assured:json-schema-validator:4.3.3'
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude(group: 'junit', module: 'junit')
+    }
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:3.6.28'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation "org.junit.platform:junit-platform-commons:1.7.0"
+    testImplementation 'junit:junit:4.12'
 }
 
 test {
-    useTestNG()
+    useJUnitPlatform()
 }

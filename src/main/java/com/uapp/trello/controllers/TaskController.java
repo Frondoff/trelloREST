@@ -23,9 +23,9 @@ public class TaskController {
         return new ResponseEntity<>(taskService.createTask(taskDto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/columns/tasks/{id}")
-    public ResponseEntity<Task> editTask(@RequestBody TaskDto taskDto, @PathVariable int id) {
-        return new ResponseEntity<>(taskService.editTask(id, taskDto), HttpStatus.OK);
+    @PutMapping("/columns/**/tasks/{taskId}")
+    public ResponseEntity<Task> editTask(@RequestBody TaskDto taskDto, @PathVariable int taskId) {
+        return new ResponseEntity<>(taskService.editTask(taskId, taskDto), HttpStatus.OK);
     }
 
     @PutMapping("/columns/{columnId}/tasks/{taskId}/order")

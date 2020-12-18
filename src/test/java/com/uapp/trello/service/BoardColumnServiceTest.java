@@ -2,50 +2,69 @@ package com.uapp.trello.service;
 
 import com.uapp.trello.objects.BoardColumn;
 import com.uapp.trello.repository.BoardColumnRepository;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.testng.MockitoTestNGListener;
-import org.testng.annotations.Listeners;
-import org.testng.annotations.Test;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.testng.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
-@Listeners(MockitoTestNGListener.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class BoardColumnServiceTest {
 
     private static final String TEST_COLUMN_NAME = "TestColumn";
     private static final String NEW_TEST_COLUMN_NAME = "New TestColumn";
+    private static final int UNKNOWN_ID = Integer.MAX_VALUE;
 
     @Mock
     private BoardColumnRepository boardColumnRepository;
+
     @InjectMocks
     private BoardColumnService boardColumnService;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.openMocks(this);
+        boardColumnService = new BoardColumnService(boardColumnRepository);
+    }
 
     @Test
     public void test_create_column_was_success() {
         BoardColumn boardColumn = new BoardColumn(TEST_COLUMN_NAME, 1);
 
-        Mockito.when(boardColumnRepository.saveBoardColumn(boardColumn)).thenReturn(boardColumn);
+        when(boardColumnRepository.saveBoardColumn(boardColumn)).thenReturn(new BoardColumn(1, TEST_COLUMN_NAME, 1));
 
-        BoardColumn expectedColumn = boardColumnService.createColumn(TEST_COLUMN_NAME);
+        BoardColumn actualColumn = boardColumnService.createColumn(TEST_COLUMN_NAME);
 
-        assertEquals(boardColumn, expectedColumn);
+        assertEquals(1, actualColumn.getId());
+        assertEquals(TEST_COLUMN_NAME, actualColumn.getName());
+        assertEquals(1, actualColumn.getPosition());
     }
 
     @Test
-    public void test_edit_column__was_success() {
+    public void test_edit_column_was_success() {
         BoardColumn boardColumn = new BoardColumn(1, TEST_COLUMN_NAME, 1);
 
-        Mockito.when(boardColumnRepository.getBoardColumnById(boardColumn.getId())).thenReturn(boardColumn);
-        Mockito.when(boardColumnRepository.updateBoardColumn(boardColumn)).thenReturn(boardColumn);
+        when(boardColumnRepository.getBoardColumnById(1)).thenReturn(boardColumn);
+        when(boardColumnRepository.updateBoardColumn(boardColumn)).thenReturn(boardColumn);
 
-        BoardColumn expectedColumn = boardColumnService.editColumn(1, NEW_TEST_COLUMN_NAME);
+        BoardColumn actualColumn = boardColumnService.editColumn(1, NEW_TEST_COLUMN_NAME);
 
-        assertEquals(NEW_TEST_COLUMN_NAME, expectedColumn.getName());
+        assertEquals(NEW_TEST_COLUMN_NAME, actualColumn.getName());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_edit_column_should_throw_exception_when_column_not_found() {
+        when(boardColumnRepository.getBoardColumnById(UNKNOWN_ID)).thenReturn(null);
+
+        boardColumnService.editColumn(UNKNOWN_ID, NEW_TEST_COLUMN_NAME);
     }
 
     @Test
@@ -53,14 +72,14 @@ public class BoardColumnServiceTest {
         BoardColumn firstBoardColumn = new BoardColumn(1, TEST_COLUMN_NAME, 1);
         BoardColumn secondBoardColumn = new BoardColumn(2, TEST_COLUMN_NAME, 2);
 
-        Mockito.when(boardColumnRepository.getBoardColumnById(firstBoardColumn.getId())).thenReturn(firstBoardColumn);
-        Mockito.when(boardColumnRepository.getBoardColumnByPosition(secondBoardColumn.getId())).thenReturn(secondBoardColumn);
-        Mockito.when(boardColumnRepository.updateBoardColumn(firstBoardColumn)).thenReturn(firstBoardColumn);
-        Mockito.when(boardColumnRepository.updateBoardColumn(secondBoardColumn)).thenReturn(secondBoardColumn);
+        when(boardColumnRepository.getBoardColumnById(firstBoardColumn.getId())).thenReturn(firstBoardColumn);
+        when(boardColumnRepository.getBoardColumnByPosition(secondBoardColumn.getId())).thenReturn(secondBoardColumn);
+        when(boardColumnRepository.updateBoardColumn(firstBoardColumn)).thenReturn(firstBoardColumn);
+        when(boardColumnRepository.updateBoardColumn(secondBoardColumn)).thenReturn(secondBoardColumn);
 
-        BoardColumn expectedColumn = boardColumnService.changeColumnOrder(1, 2);
+        BoardColumn actualColumn = boardColumnService.changeColumnOrder(1, 2);
 
-        assertEquals(2, expectedColumn.getPosition());
+        assertEquals(2, actualColumn.getPosition());
         assertEquals(1, secondBoardColumn.getPosition());
         assertEquals(2, firstBoardColumn.getPosition());
     }
@@ -72,11 +91,19 @@ public class BoardColumnServiceTest {
                 new BoardColumn(2, TEST_COLUMN_NAME, 2),
                 new BoardColumn(3, TEST_COLUMN_NAME, 3));
 
-        Mockito.when(boardColumnRepository.getBoardColumnById(boardColumn.getId())).thenReturn(boardColumn);
-        Mockito.when(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition())).thenReturn(boardColumns);
+        when(boardColumnRepository.getBoardColumnById(boardColumn.getId())).thenReturn(boardColumn);
+        when(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition())).thenReturn(boardColumns);
 
-        boardColumnService.deleteColumn(boardColumn.getId());
+        List<BoardColumn> actualBoardColumns = boardColumnService.deleteColumn(boardColumn.getId());
 
-        Mockito.verify(boardColumnRepository, Mockito.times(1)).deleteBoardColumn(boardColumn);
+        assertEquals(1, actualBoardColumns.get(0).getPosition());
+        assertEquals(2, actualBoardColumns.get(1).getPosition());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_delete_column_should_throw_exception_when_column_not_found() {
+        when(boardColumnRepository.getBoardColumnById(UNKNOWN_ID)).thenReturn(null);
+
+        boardColumnService.deleteColumn(UNKNOWN_ID);
     }
 }

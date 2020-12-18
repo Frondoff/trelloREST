@@ -26,9 +26,13 @@ public class BoardColumnService {
     }
 
     public BoardColumn editColumn(int id, String name) {
-        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
-        boardColumn.setName(name);
-        return boardColumnRepository.updateBoardColumn(boardColumn);
+        if (boardColumnRepository.getBoardColumnById(id) == null) {
+            throw new IllegalArgumentException();
+        } else {
+            BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
+            boardColumn.setName(name);
+            return boardColumnRepository.updateBoardColumn(boardColumn);
+        }
     }
 
     public BoardColumn changeColumnOrder(int id, int newPosition) {
@@ -42,17 +46,22 @@ public class BoardColumnService {
         return boardColumnRepository.updateBoardColumn(firstBoardColumn);
     }
 
-    public void deleteColumn(int id) {
-        BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
-        boardColumnRepository.deleteBoardColumn(boardColumn);
+    public List<BoardColumn> deleteColumn(int id) {
+        if (boardColumnRepository.getBoardColumnById(id) == null) {
+            throw new IllegalArgumentException();
+        } else {
+            BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(id);
+            boardColumnRepository.deleteBoardColumn(boardColumn);
 
-        fixColumnsOrder(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition()));
+            return fixColumnsOrder(boardColumnRepository.getColumnsGreaterThanDeleted(boardColumn.getPosition()));
+        }
     }
 
-    private void fixColumnsOrder(List<BoardColumn> boardColumns) {
+    private List<BoardColumn> fixColumnsOrder(List<BoardColumn> boardColumns) {
         for (BoardColumn boardColumn : boardColumns) {
             boardColumn.setPosition(boardColumn.getPosition() - 1);
             boardColumnRepository.updateBoardColumn(boardColumn);
         }
+        return boardColumns;
     }
 }
