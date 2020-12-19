@@ -25,12 +25,15 @@ public class TaskService {
 
     public Task createTask(int columnId, TaskDto taskDto) {
         Task task = new Task();
+        if (boardColumnRepository.getBoardColumnById(columnId) == null) {
+            throw new IllegalArgumentException();
+        }
         BoardColumn boardColumn = boardColumnRepository.getBoardColumnById(columnId);
 
         task.setName(taskDto.getName());
         task.setDescription(taskDto.getDescription());
         task.setDate(String.valueOf(LocalDate.now()));
-        task.setPosition((int) (taskRepository.getCountOfTasks(boardColumn.getId()) + 1));
+        task.setPosition((int) (taskRepository.getCountOfTasksByColumnId(boardColumn.getId()) + 1));
         task.setBoardColumn(boardColumn);
 
         return taskRepository.saveTask(task);

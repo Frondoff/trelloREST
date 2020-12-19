@@ -67,6 +67,15 @@ public class TaskServiceTest {
         assertEquals(POSITION, actualTask.getPosition());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void test_create_task_should_throw_exception_when_column_not_found() {
+        TaskDto taskDto = new TaskDto(TASK_NAME, TASK_DESCRIPTION, date);
+
+        when(boardColumnRepository.getBoardColumnById(UNKNOWN_ID)).thenReturn(null);
+
+        taskService.createTask(UNKNOWN_ID, taskDto);
+    }
+
     @Test
     public void test_edit_task_was_success() {
         BoardColumn boardColumn = new BoardColumn(COLUMN_ID, TEST_COLUMN_NAME, POSITION);

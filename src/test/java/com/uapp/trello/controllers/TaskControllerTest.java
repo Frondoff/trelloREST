@@ -68,6 +68,17 @@ public class TaskControllerTest {
     }
 
     @Test
+    public void test_create_task_with_unknown_column_id_will_return_404_not_found() throws Exception {
+        TaskDto taskDto = new TaskDto(TASK_NAME, TASK_DESCRIPTION, date);
+        when(taskService.createTask(any(int.class), any(TaskDto.class))).thenThrow(new IllegalArgumentException());
+
+        mockMvc.perform(post("/columns/{columnID}/tasks", UNKNOWN_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(taskDto.toString()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void test_edit_task_was_success() throws Exception {
         BoardColumn boardColumn = new BoardColumn(ID, TEST_COLUMN_NAME, POSITION);
         TaskDto taskDto = new TaskDto(TASK_NAME, TASK_DESCRIPTION, date);
@@ -90,7 +101,7 @@ public class TaskControllerTest {
     }
 
     @Test
-    public void test_edit_column_with_unknown_id_will_return_404_not_found() throws Exception {
+    public void test_edit_task_with_unknown_id_will_return_404_not_found() throws Exception {
         TaskDto taskDto = new TaskDto(TASK_NAME, TASK_DESCRIPTION, date);
         when(taskService.editTask(any(int.class), any(TaskDto.class))).thenThrow(new IllegalArgumentException());
 

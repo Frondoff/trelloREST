@@ -25,7 +25,6 @@ public class BoardColumnControllerTest {
     private static final int ID = 1;
     private static final int UNKNOWN_ID = Integer.MAX_VALUE;
     private static final int POSITION = 1;
-    private static final int NEW_POSITION = 2;
     private static final int NUMBER_OF_INVOCATIONS = 1;
 
     @Autowired

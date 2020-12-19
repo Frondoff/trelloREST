@@ -22,7 +22,11 @@ public class TaskController {
 
     @PostMapping("/columns/{columnID}/tasks")
     public ResponseEntity<Task> createTask(@RequestBody TaskDto taskDto, @PathVariable int columnID) {
-        return new ResponseEntity<>(taskService.createTask(columnID, taskDto), HttpStatus.CREATED);
+        try {
+            return new ResponseEntity<>(taskService.createTask(columnID, taskDto), HttpStatus.CREATED);
+        } catch (IllegalArgumentException ex) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/columns/**/tasks/{taskId}")
