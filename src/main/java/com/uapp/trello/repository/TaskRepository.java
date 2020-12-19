@@ -3,13 +3,14 @@ package com.uapp.trello.repository;
 import com.uapp.trello.objects.Task;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class TaskRepository {
 
     private final SessionFactory sessionFactory;
@@ -21,27 +22,21 @@ public class TaskRepository {
 
     public Task saveTask(Task task) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         session.save(task);
-        transaction.commit();
 
         return task;
     }
 
     public Task updateTask(Task task) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         session.update(task);
-        transaction.commit();
 
         return task;
     }
 
     public void deleteTask(Task task) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         session.delete(task);
-        transaction.commit();
     }
 
     public Task getTaskById(int id) {
@@ -74,7 +69,7 @@ public class TaskRepository {
         }
     }
 
-    public Long getCountOfTasks(int columnId) {
+    public Long getCountOfTasksByColumnId(int columnId) {
         return sessionFactory.getCurrentSession()
                 .createQuery("SELECT count(distinct t.id) FROM Task t where t.boardColumn.id = :columnId", Long.class)
                 .setParameter("columnId", columnId)

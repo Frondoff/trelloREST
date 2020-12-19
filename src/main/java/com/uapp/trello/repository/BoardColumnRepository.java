@@ -3,13 +3,14 @@ package com.uapp.trello.repository;
 import com.uapp.trello.objects.BoardColumn;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Repository
+@Transactional
 public class BoardColumnRepository {
 
     private final SessionFactory sessionFactory;
@@ -21,27 +22,21 @@ public class BoardColumnRepository {
 
     public BoardColumn saveBoardColumn(BoardColumn boardColumn) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         session.save(boardColumn);
-        transaction.commit();
 
         return boardColumn;
     }
 
     public BoardColumn updateBoardColumn(BoardColumn boardColumn) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         session.update(boardColumn);
-        transaction.commit();
 
         return boardColumn;
     }
 
     public void deleteBoardColumn(BoardColumn boardColumn) {
         Session session = sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
         session.delete(boardColumn);
-        transaction.commit();
     }
 
     public BoardColumn getBoardColumnById(int id) {

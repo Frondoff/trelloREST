@@ -38,6 +38,14 @@ public class Task {
         this.boardColumn = boardColumn;
     }
 
+    public Task(String name, String description, String date, int position, BoardColumn boardColumn) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.position = position;
+        this.boardColumn = boardColumn;
+    }
+
     public String getDescription() {
         return description;
     }
